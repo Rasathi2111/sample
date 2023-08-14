@@ -1,0 +1,96 @@
+Socket Programming
+==================
+The main purpose is to perform client server communication
+To do that we need sockets
+Sockets - connection between end points
+ Two types:
+ 1. Connection oriented - In java "Socket" class supports this service
+ 2. Connection less - In java "Datagram" class is used
+*/
+//import necessary packages
+import java.net.*; //networking purpose like getting address etc
+import java.io.*; //to read and write data from sockets
+class ServerClass
+{
+ static void print_info()
+ {
+ System.out.println("*".repeat(56)+"\n IT1580 - Computer Networks Laboratory\n");
+ System.out.println("\tRoll Number : 20UIT037"+"\n\tName \t :
+SUNDARESHWARAN. J");
+ System.out.println("\tEx. No\t : 02");
+ System.out.println("\tEx. Name : Simulation of Bit Stuffing");
+ System.out.println("\tDate\t : 21.07.2022");
+ System.out.println("*".repeat(56));
+ }
+ public static void main(String args[])
+ {
+ //An exception should be handled because we used DataInputStream class to
+get input
+ try
+ {
+ //creating server socket
+ ServerSocket ss = new ServerSocket(3192);
+
+ //Binding
+ Socket s1 = ss.accept();
+
+ //Read the data from the socket
+ DataInputStream dis = new DataInputStream(s1.getInputStream());
+ DataOutputStream writeData = new
+DataOutputStream(s1.getOutputStream());
+
+ //variable declaration
+ String original_data="";
+ String message;
+
+ print_info();
+ System.out.println("\t\t------- Server Side --------\n");
+ int count = 0;
+
+ //read data from socket (UTF encoding method) and typecast to
+string
+ message = (String)dis.readUTF();
+
+ System.out.println("Stuffed Data Received from Client :
+"+message);
+
+ //find the length of the received message from and removing
+flag bits
+ int length = (message.length())-8;
+ //for loop to perform destuffing
+ for(int i=7;i<=length;i++)
+ {
+ char ch = message.charAt(i);
+ if(ch == '1')
+ {
+ count++;
+ if(count==5)
+ {
+ i+=2;
+ count = 0;
+ }
+ else
+ {
+ original_data += ch;
+ }
+ }
+ else
+ {
+ original_data += ch;
+ count = 0;
+ }
+ }
+ System.out.println("\nData after Destuffing : "+original_data);
+ System.out.print("\n\t\t--------- Bye. -------------");
+
+ //close the connection
+ writeData.close();
+ s1.close();
+
+ }
+ catch(Exception e)
+ {
+ System.out.println("Exception occured"+e);
+ }
+ }
+} 
